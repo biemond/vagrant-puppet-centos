@@ -1,0 +1,120 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.define "admin2" , primary: true do |admin2|
+
+    #admin2.vm.box = "centos-5.8-x86_64"
+    #admin2.vm.box_url = "https://dl.dropboxusercontent.com/s/sij0m2qmn02a298/centos-5.8-x86_64.box"
+
+    admin2.vm.box = "centos-6.4-x86_64"
+    admin2.vm.box_url = "https://dl.dropboxusercontent.com/s/yg9ceak6zd86wk7/centos-6.4-x86_64.box"
+
+    admin2.vm.hostname = "admin2.example.com"
+    # admin.vm.network :forwarded_port, guest: 80, host: 8888 ,auto_correct: true
+    # admin.vm.network :forwarded_port, guest: 7001, host: 7001, auto_correct: true
+  
+    admin2.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777","fmode=777"]
+  
+    admin2.vm.network :private_network, ip: "10.10.10.10"
+  
+    admin2.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "2048"]
+      vb.customize ["modifyvm", :id, "--name", "admin2"]
+    end
+  
+    admin2.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppet/hiera.yaml"
+    
+    admin2.vm.provision :puppet do |puppet|
+      puppet.manifests_path    = "puppet/manifests"
+      puppet.module_path       = "puppet/modules"
+      puppet.manifest_file     = "site.pp"
+      puppet.options           = "--verbose --hiera_config /vagrant/puppet/hiera.yaml"
+  
+      puppet.facter = {
+        "environment" => "development",
+        "vm_type"     => "vagrant",
+      }
+      
+    end
+  
+  end
+  
+  config.vm.define "node10" do |node10|
+
+    #node10.vm.box = "centos-5.8-x86_64"
+    #node10.vm.box_url = "https://dl.dropboxusercontent.com/s/sij0m2qmn02a298/centos-5.8-x86_64.box"
+
+    node10.vm.box = "centos-6.4-x86_64"
+    node10.vm.box_url = "https://dl.dropboxusercontent.com/s/yg9ceak6zd86wk7/centos-6.4-x86_64.box"
+  
+    node10.vm.hostname = "node10.example.com"
+  
+    node10.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777","fmode=777"]
+  
+    node10.vm.network :private_network, ip: "10.10.10.100"
+  
+    node10.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "1532"]
+      vb.customize ["modifyvm", :id, "--name", "node10"]
+    end
+  
+    node10.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppet/hiera.yaml"
+    
+    node10.vm.provision :puppet do |puppet|
+      puppet.manifests_path    = "puppet/manifests"
+      puppet.module_path       = "puppet/modules"
+      puppet.manifest_file     = "node.pp"
+      puppet.options           = "--verbose --hiera_config /vagrant/puppet/hiera.yaml"
+  
+      puppet.facter = {
+        "environment" => "development",
+        "vm_type"     => "vagrant",
+      }
+      
+    end
+
+  end
+
+  config.vm.define "node20" do |node20|
+    #node20.vm.box = "centos-5.8-x86_64"
+    #node20.vm.box_url = "https://dl.dropboxusercontent.com/s/sij0m2qmn02a298/centos-5.8-x86_64.box"
+
+    node20.vm.box = "centos-6.4-x86_64"
+    node20.vm.box_url = "https://dl.dropboxusercontent.com/s/yg9ceak6zd86wk7/centos-6.4-x86_64.box"
+  
+    node20.vm.hostname = "node20.example.com"
+  
+    node20.vm.synced_folder ".", "/vagrant", :mount_options => ["dmode=777","fmode=777"]
+  
+    node20.vm.network :private_network, ip: "10.10.10.200", auto_correct: true
+  
+  
+    node20.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "1532"]
+      vb.customize ["modifyvm", :id, "--name", "node20"]
+    end
+  
+    node20.vm.provision :shell, :inline => "ln -sf /vagrant/puppet/hiera.yaml /etc/puppet/hiera.yaml"
+    
+    node20.vm.provision :puppet do |puppet|
+      puppet.manifests_path    = "puppet/manifests"
+      puppet.module_path       = "puppet/modules"
+      puppet.manifest_file     = "node.pp"
+      puppet.options           = "--verbose --hiera_config /vagrant/puppet/hiera.yaml"
+  
+      puppet.facter = {
+        "environment" => "development",
+        "vm_type"     => "vagrant",
+      }
+      
+    end
+
+  end
+
+
+end
