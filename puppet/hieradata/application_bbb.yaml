@@ -1,0 +1,25 @@
+---
+servers:
+    - clusterBBB:
+        global_parameters:
+            log_output:                 'true'
+            weblogic_type:              'server'
+            script:                     'createServer.py'
+            params:
+                    - "listenAddress    = 8001"
+                    - "nodeMgrLogDir    = '/data/logs'"
+        entries:
+            -   title:                  'server1'
+                weblogic_object_name:   'wlsServer1'
+                params:
+                    - "javaArguments    = '-Xms752m -Xmx752m'"
+                    - "wlsServerName    = 'wlsServer1'"
+                    - "machineName      = 'Node1'"
+            -   title:                  'server2'
+                weblogic_object_name:   'wlsServer2'
+                params:
+                    - "javaArguments    = '-Xms752m -Xmx752m'"
+                    - "wlsServerName    = 'wlsServer2'"
+                    - "machineName      = 'Node2'"
+
+
